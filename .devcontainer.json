@@ -1,6 +1,12 @@
 {
 	"image": "mcr.microsoft.com/devcontainers/go",
-	"postCreateCommand": "git remote add upstream https://github.com/intertwin-eu/interLink ;  git  fetch upstream;",
+	"postCreateCommand": "git remote add upstream https://github.com/intertwin-eu/interLink ;  git  fetch upstream; go install github.com/go-delve/delve/cmd/dlv@latest; sudo dockerd &> /tmp/docker.log &",
+    "features": {
+        "ghcr.io/devcontainers/features/docker-in-docker:2": {
+            "azureDnsAutoDetection": false,
+            "moby": false
+        }
+    },
 	"customizations": {
 		"vscode": {
 			"extensions": [
@@ -8,7 +14,8 @@
 				"golang.go",
 				"github.vscode-github-actions",
 				"yzhang.markdown-all-in-one",
-				"pomdtr.excalidraw-editor"
+				"pomdtr.excalidraw-editor",
+				"ms-azuretools.vscode-docker"
 			]
 		}
 	}
