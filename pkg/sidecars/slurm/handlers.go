@@ -10,7 +10,6 @@ import (
 	exec "github.com/alexellis/go-execute/pkg/v1"
 	"github.com/containerd/containerd/log"
 	commonIL "github.com/intertwin-eu/interlink/pkg/common"
-	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -28,12 +27,11 @@ func SubmitHandler(w http.ResponseWriter, r *http.Request) {
 	var req []commonIL.RetrievedPodData
 	json.Unmarshal(bodyBytes, &req)
 
-	for _, data := range req {
+	for _, pod := range req {
 		var metadata metav1.ObjectMeta
-		var containers []v1.Container
 
-		containers = data.Pod.Spec.Containers
-		metadata = data.Pod.ObjectMeta
+		containers := pod.Pod.Spec.Containers
+		metadata = pod.Pod.ObjectMeta
 
 		for _, container := range containers {
 			log.G(Ctx).Info("- Beginning script generation for container " + container.Name)
@@ -51,7 +49,6 @@ func SubmitHandler(w http.ResponseWriter, r *http.Request) {
 			} else {
 				image = "docker://" + container.Image
 			}
-			image = container.Image
 
 			log.G(Ctx).Debug("-- Appending all commands together...")
 			singularity_command := append(commstr1, envs...)
@@ -61,14 +58,14 @@ func SubmitHandler(w http.ResponseWriter, r *http.Request) {
 			singularity_command = append(singularity_command, container.Args...)
 
 			path := produce_slurm_script(container, metadata, singularity_command)
-			/*out := */ slurm_batch_submit(path)
-			//handle_jid(container, out, data.Pod)
+			out := slurm_batch_submit(path)
+			handle_jid(container, out, pod.Pod)
 
 			jid, err := os.ReadFile(commonIL.InterLinkConfigInst.DataRootFolder + container.Name + ".jid")
 			if err != nil {
 				log.G(Ctx).Error("Unable to read JID from file")
 			}
-			JID = append(JID, JidStruct{JID: string(jid), Pod: data.Pod})
+			JID = append(JID, JidStruct{JID: string(jid), Pod: pod.Pod})
 		}
 	}
 
@@ -84,7 +81,7 @@ func StopHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var req []*v1.Pod
+	var req []commonIL.RetrievedPodData
 	err = json.Unmarshal(bodyBytes, &req)
 	if err != nil {
 		log.G(Ctx).Error(err)
@@ -92,7 +89,7 @@ func StopHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, pod := range req {
-		containers := pod.Spec.Containers
+		containers := pod.Pod.Spec.Containers
 
 		for _, container := range containers {
 			delete_container(container)
@@ -109,7 +106,7 @@ func StatusHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var req []*v1.Pod
+	var req []commonIL.RetrievedPodData
 	var resp commonIL.StatusResponse
 	json.Unmarshal(bodyBytes, &req)
 	if err != nil {
@@ -151,9 +148,9 @@ func StatusHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if flag {
-			resp.PodStatus = append(resp.PodStatus, commonIL.PodStatus{PodName: string(pod.Name), PodStatus: commonIL.RUNNING})
+			resp.PodStatus = append(resp.PodStatus, commonIL.PodStatus{PodName: string(pod.Pod.Name), PodStatus: commonIL.RUNNING})
 		} else {
-			resp.PodStatus = append(resp.PodStatus, commonIL.PodStatus{PodName: string(pod.Name), PodStatus: commonIL.STOP})
+			resp.PodStatus = append(resp.PodStatus, commonIL.PodStatus{PodName: string(pod.Pod.Name), PodStatus: commonIL.STOP})
 		}
 	}
 	resp.ReturnVal = "Status"
