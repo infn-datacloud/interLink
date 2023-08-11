@@ -2,7 +2,7 @@
 	"image": "mcr.microsoft.com/devcontainers/go:1.20-bullseye",
 	"privileged": true,
 	"capAdd": ["SYS_ADMIN"],
-	"postCreateCommand": "git remote add upstream https://github.com/intertwin-eu/interLink ; minikube start ;git  fetch upstream; go install github.com/go-delve/delve/cmd/dlv@latest; sudo dockerd &> /tmp/docker.log &",
+	"postCreateCommand": "git remote add upstream https://github.com/intertwin-eu/interLink ;git  fetch upstream; go install github.com/go-delve/delve/cmd/dlv@latest",
     "features": {
 		"ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {
 			"version": "latest",
