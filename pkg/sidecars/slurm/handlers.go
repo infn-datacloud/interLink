@@ -39,7 +39,7 @@ func SubmitHandler(w http.ResponseWriter, r *http.Request) {
 
 			envs := prepare_envs(container)
 			image := ""
-			mounts := prepare_mounts(container, &data.Pod, req)
+			mounts := prepare_mounts(container, &pod.Pod, req)
 			if strings.HasPrefix(container.Image, "/") {
 				if image_uri, ok := metadata.Annotations["slurm-job.knoc.io/image-root"]; ok {
 					image = image_uri + container.Image
