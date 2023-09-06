@@ -185,6 +185,10 @@ func NewServiceAccount() error {
 		}
 
 		token, err := os.ReadFile(InterLinkConfigInst.VKTokenFile) // just pass the file name
+		if err != nil {
+			log.G(context.Background()).Fatal(err)
+		}
+
 		req.Header.Add("Authorization", "Bearer "+string(token))
 		resp, err := http.DefaultClient.Do(req)
 		if err != nil {

@@ -121,28 +121,27 @@ func main() {
 		DaemonPort: 10250,
 	}
 
-	kubecfgFile, err := ioutil.ReadFile(os.Getenv("KUBECONFIG"))
-	if err != nil {
-		log.G(ctx).Fatal(err)
-	}
-
-	clientCfg, err := clientcmd.NewClientConfigFromBytes(kubecfgFile)
-	if err != nil {
-		log.G(ctx).Fatal(err)
-	}
-
 	var kubecfg *rest.Config
 
-	kubecfg, err = clientCfg.ClientConfig()
+	kubecfgFile, err := ioutil.ReadFile(os.Getenv("KUBECONFIG"))
 	if err != nil {
+		log.G(ctx).Info("Can't setup client from KUBECONFIG env, trying with incluster setup")
+		kubecfg, err = rest.InClusterConfig()
+		if err != nil {
+			log.G(ctx).Fatal(err)
+		}
 		log.G(ctx).Fatal(err)
-	}
+	} else {
+		clientCfg, err := clientcmd.NewClientConfigFromBytes(kubecfgFile)
+		if err != nil {
+			log.G(ctx).Fatal(err)
+		}
 
-	// TODO: enable on demand
-	// kubecfg, err := rest.InClusterConfig()
-	// if err != nil {
-	//	log.G(ctx).Fatal(err)
-	// }
+		kubecfg, err = clientCfg.ClientConfig()
+		if err != nil {
+			log.G(ctx).Fatal(err)
+		}
+	}
 
 	localClient := kubernetes.NewForConfigOrDie(kubecfg)
 
