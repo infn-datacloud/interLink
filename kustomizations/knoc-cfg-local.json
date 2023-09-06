@@ -1,0 +1,7 @@
+{
+    "test-local-vk": {
+        "cpu": "128", 
+        "memory": "800Gi",
+        "pods": "1000"
+  }
+}

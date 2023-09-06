@@ -1,0 +1,15 @@
+VKTokenFile: "/opt/interlink/token"
+InterlinkURL: "https://zam10038.zam.kfa-juelich.de"
+SidecarURL: "http://localhost"
+InterlinkPort: "7002"
+SidecarService: "docker" #docker, slurm
+SbatchPath: "/usr/bin/sbatch"
+ScancelPath: "/usr/bin/scancel"
+CommandPrefix: ""
+ExportPodData:  false
+DataRootFolder: ".knoc"
+ServiceAccount: "knoc"
+Namespace: "vk"
+Tsocks: false
+TsocksPath: "$WORK/tsocks-1.8beta5+ds1/libtsocks.so"
+TsocksLoginNode: "login01"

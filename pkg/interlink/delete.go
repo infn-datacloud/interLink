@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
-	"os"
 
 	"github.com/containerd/containerd/log"
 	commonIL "github.com/intertwin-eu/interlink/pkg/common"
@@ -13,7 +12,7 @@ import (
 )
 
 func DeleteHandler(w http.ResponseWriter, r *http.Request) {
-	log.G(Ctx).Info("InterLink: received Delete call")
+	log.G(Ctx).Info("InterLink: receive Delete call")
 
 	bodyBytes, err := io.ReadAll(r.Body)
 	statusCode := http.StatusOK
