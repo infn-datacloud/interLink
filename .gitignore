@@ -14,3 +14,7 @@ serviceaccount.yaml
 .knoc
 .tmp
 kustomizations_tmp
+git
+kubectl
+kube_config
+kube_config/*

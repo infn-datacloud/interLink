@@ -15,7 +15,7 @@ func NewK8sInstance(ctx context.Context, client *dagger.Client) *K8sInstance {
 		ctx:         ctx,
 		client:      client,
 		container:   nil,
-		configCache: client.CacheVolume("k3s_config"),
+		configCache: client.Host().Directory("./kube_config"),
 	}
 }
 
@@ -23,29 +23,17 @@ type K8sInstance struct {
 	ctx         context.Context
 	client      *dagger.Client
 	container   *dagger.Container
-	configCache *dagger.CacheVolume
+	configCache *dagger.Directory
 }
 
 func (k *K8sInstance) start() error {
-	// create k3s service container
-	k3s := k.client.Pipeline("k3s init").Container().
-		From("rancher/k3s").
-		WithMountedCache("/etc/rancher/k3s", k.configCache).
-		WithMountedTemp("/etc/lib/cni").
-		WithMountedTemp("/var/lib/kubelet").
-		WithMountedTemp("/var/lib/rancher/k3s").
-		WithMountedTemp("/var/log").
-		WithEntrypoint([]string{"sh", "-c"}).
-		WithExec([]string{"k3s server --snapshotter native --bind-address $(ip route | grep src | awk '{print $NF}') --disable traefik --disable metrics-server"}, dagger.ContainerWithExecOpts{InsecureRootCapabilities: true}).
-		WithExposedPort(6443)
 
 	k.container = k.client.Container().
 		From("bitnami/kubectl").
-		WithMountedCache("/cache/k3s", k.configCache).
-		WithServiceBinding("k3s", k3s).
+		WithMountedDirectory("/config/kube", k.configCache).
 		WithEnvVariable("CACHE", time.Now().String()).
 		WithUser("root").
-		WithExec([]string{"cp", "/cache/k3s/k3s.yaml", "/.kube/config"}, dagger.ContainerWithExecOpts{SkipEntrypoint: true}).
+		WithExec([]string{"cp", "/config/kube/kubeconfig", "/.kube/config"}, dagger.ContainerWithExecOpts{SkipEntrypoint: true}).
 		WithExec([]string{"chown", "1001:0", "/.kube/config"}, dagger.ContainerWithExecOpts{SkipEntrypoint: true}).
 		WithUser("1001").
 		WithEntrypoint([]string{"sh", "-c"})
