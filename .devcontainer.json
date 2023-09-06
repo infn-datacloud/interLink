@@ -1,6 +1,14 @@
 {
 	"image": "mcr.microsoft.com/devcontainers/go",
-	"postCreateCommand": "git remote add upstream https://github.com/intertwin-eu/interLink ;  git  fetch upstream;",
+	"postCreateCommand": "git remote add upstream https://github.com/intertwin-eu/interLink ;  git  fetch upstream; ",
+	"mounts": [{ "source": "/etc/ssl", "target": "/etc/ssl", "type": "bind" }],
+	"privileged": true,
+    "features": {
+        "ghcr.io/devcontainers/features/docker-in-docker:2": {
+            "azureDnsAutoDetection": false,
+            "moby": false,
+        },
+    },
 	"customizations": {
 		"vscode": {
 			"extensions": [
