@@ -154,7 +154,6 @@ func NewProvider(providerConfig, nodeName, operatingSystem string, internalIP st
 // loadConfig loads the given json configuration files and yaml to communicate with InterLink.
 func loadConfig(providerConfig, nodeName string, ctx context.Context) (config VirtualKubeletConfig, err error) {
 
-	commonIL.NewInterLinkConfig()
 	log.G(context.Background()).Info("Loading Virtual Kubelet config from " + providerConfig)
 	data, err := os.ReadFile(providerConfig)
 	if err != nil {
@@ -378,7 +377,7 @@ func (p *VirtualKubeletProvider) DeletePod(ctx context.Context, pod *v1.Pod) (er
 
 	now := metav1.Now()
 	pod.Status.Phase = v1.PodSucceeded
-	pod.Status.Reason = "KNOCProviderPodDeleted"
+	pod.Status.Reason = "VKProviderPodDeleted"
 
 	err = RemoteExecution(p, ctx, DELETE, "", pod)
 	if err != nil {
@@ -407,9 +406,9 @@ func (p *VirtualKubeletProvider) DeletePod(ctx context.Context, pod *v1.Pod) (er
 		pod.Status.ContainerStatuses[idx].Ready = false
 		pod.Status.ContainerStatuses[idx].State = v1.ContainerState{
 			Terminated: &v1.ContainerStateTerminated{
-				Message:    "KNOC provider terminated container upon deletion",
+				Message:    "VK provider terminated container upon deletion",
 				FinishedAt: now,
-				Reason:     "KNOCProviderPodContainerDeleted",
+				Reason:     "VKProviderPodContainerDeleted",
 				// StartedAt:  pod.Status.ContainerStatuses[idx].State.Running.StartedAt,
 			},
 		}
@@ -418,9 +417,9 @@ func (p *VirtualKubeletProvider) DeletePod(ctx context.Context, pod *v1.Pod) (er
 		pod.Status.InitContainerStatuses[idx].Ready = false
 		pod.Status.InitContainerStatuses[idx].State = v1.ContainerState{
 			Terminated: &v1.ContainerStateTerminated{
-				Message:    "KNOC provider terminated container upon deletion",
+				Message:    "VK provider terminated container upon deletion",
 				FinishedAt: now,
-				Reason:     "KNOCProviderPodContainerDeleted",
+				Reason:     "VKProviderPodContainerDeleted",
 				// StartedAt:  pod.Status.InitContainerStatuses[idx].State.Running.StartedAt,
 			},
 		}
