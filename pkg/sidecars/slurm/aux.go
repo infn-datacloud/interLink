@@ -244,6 +244,7 @@ func prepare_mounts(container v1.Container, data []commonIL.RetrievedPodData) ([
 
 func produce_slurm_script(podUID string, metadata metav1.ObjectMeta, commands []SingularityCommand) (string, error) {
 	log.G(Ctx).Info("-- Creating file for the Slurm script")
+	prefix = ""
 	err := os.MkdirAll(commonIL.InterLinkConfigInst.DataRootFolder+podUID, os.ModePerm)
 	if err != nil {
 		log.G(Ctx).Error(err)
