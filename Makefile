@@ -7,8 +7,8 @@ vk:
 	go build -o bin/vk
 
 sidecars:
-	GOOS=linux GOARCH=amd64 go build -o bin/docker-sd cmd/sidecars/docker/main.go
-	GOOS=linux GOARCH=amd64 go build -o bin/slurm-sd cmd/sidecars/slurm/main.go
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o bin/docker-sd cmd/sidecars/docker/main.go
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o bin/slurm-sd cmd/sidecars/slurm/main.go
 
 clean:
 	rm -rf ./bin

@@ -3,6 +3,7 @@ package slurm
 import (
 	"context"
 	"errors"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -362,19 +363,25 @@ func produce_slurm_script(podUID string, metadata metav1.ObjectMeta, commands []
 
 func slurm_batch_submit(path string) (string, error) {
 	log.G(Ctx).Info("- Submitting Slurm job")
-	cmd := []string{path}
+	//cmd := []string{"-c", fmt.Sprintf("%s $HOME/%s", commonIL.InterLinkConfigInst.Sbatchpath, path)}
+	cmd := []string{"-c", fmt.Sprintf("pwd; cat $HOME/%s; sbatch $HOME/%s", path, path)}
 	shell := exec2.ExecTask{
-		Command: commonIL.InterLinkConfigInst.Sbatchpath,
+		Command: "/bin/bash",
 		Args:    cmd,
 		Shell:   true,
 	}
 
+	log.G(Ctx).Info("CMD /bin/bash ", strings.Join(cmd, " "))
 	execReturn, err := shell.Execute()
 	if err != nil {
 		log.G(Ctx).Error("Unable to create file " + path)
 		return "", err
 	}
+	log.G(Ctx).Infoln(fmt.Sprintf("EXIT CODE %d", execReturn.ExitCode))
+	log.G(Ctx).Info("STDOUT", execReturn.Stdout)
+	log.G(Ctx).Info("STDERR", execReturn.Stderr)
 	execReturn.Stdout = strings.ReplaceAll(execReturn.Stdout, "\n", "")
+	execReturn.Stderr = strings.ReplaceAll(execReturn.Stderr, "\n", "")
 
 	if execReturn.Stderr != "" {
 		log.G(Ctx).Error("Could not run sbatch: " + execReturn.Stderr)
@@ -382,7 +389,7 @@ func slurm_batch_submit(path string) (string, error) {
 	} else {
 		log.G(Ctx).Debug("Job submitted")
 	}
-	return string(execReturn.Stdout), nil
+	return string(execReturn.Stdout + execReturn.Stderr), nil
 }
 
 func handle_jid(podUID string, output string, pod v1.Pod) error {

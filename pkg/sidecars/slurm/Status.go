@@ -97,11 +97,17 @@ func StatusHandler(w http.ResponseWriter, r *http.Request) {
 
 							status, err := strconv.Atoi(strings.Replace(string(statusb), "\n", "", -1))
 							if err != nil {
-								statusCode = http.StatusInternalServerError
-								w.WriteHeader(statusCode)
-								w.Write([]byte("Error converting container status.. Check Slurm Sidecar's logs"))
-								log.G(Ctx).Error(fmt.Errorf("unable to convert container status: %s", err))
-								status = 500
+								output, err := os.ReadFile(commonIL.InterLinkConfigInst.DataRootFolder + string(pod.UID) + "/" + "job.out")
+								output2, err2 := os.ReadFile(commonIL.InterLinkConfigInst.DataRootFolder + string(pod.UID) + "/" + ct.Name + ".out")
+								if (err != nil && err2 != nil) || (string(output) == "" && string(output2) == "") {
+									w.Write([]byte("Error converting container status.. No additional logs available"))
+									statusCode = http.StatusInternalServerError
+									w.WriteHeader(statusCode)
+									return
+								}
+								log.G(Ctx).Error(fmt.Sprintf("unable to convert container status, but output files not empty: %s", string(output)+string(output2)))
+
+								status = 127
 							}
 
 							containerStatuses = append(
