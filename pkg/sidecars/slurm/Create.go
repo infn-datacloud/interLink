@@ -49,20 +49,11 @@ func SubmitHandler(w http.ResponseWriter, r *http.Request) {
 			if singularityAnnotation, ok := metadata.Annotations["job.vk.io/singularity-commands"]; ok {
 				singularityPrefix += " " + singularityAnnotation
 			}
-			commstr1 := []string{"singularity", "exec", singularityPrefix, "--writable-tmpfs"}
 
 			envs := prepare_envs(container)
 			image := ""
-			mounts, err := prepare_mounts(container, req)
-			if err != nil {
-				statusCode = http.StatusInternalServerError
-				w.WriteHeader(statusCode)
-				w.Write([]byte("Error prepairing mounts. Check Slurm Sidecar's logs"))
-				log.G(Ctx).Error(err)
-				os.RemoveAll(commonIL.InterLinkConfigInst.DataRootFolder + string(data.Pod.UID))
-				return
-			}
 
+			image = container.Image
 			if strings.HasPrefix(container.Image, "/") {
 				if image_uri, ok := metadata.Annotations["slurm-job.vk.io/image-root"]; ok {
 					image = image_uri + container.Image
@@ -72,7 +63,19 @@ func SubmitHandler(w http.ResponseWriter, r *http.Request) {
 			} else {
 				image = "docker://" + container.Image
 			}
-			image = container.Image
+
+			sandbox := "singularity  build --sandbox --fix-perms ${HOME}/" + commonIL.InterLinkConfigInst.DataRootFolder + string(data.Pod.UID) + "/container/ && "
+			commstr1 := []string{sandbox, "singularity", "exec", singularityPrefix, "--writable-tmpfs", "--nv", "-H", "${HOME}/" + commonIL.InterLinkConfigInst.DataRootFolder + string(data.Pod.UID) + ":${HOME}"}
+
+			mounts, err := prepare_mounts(container, req)
+			if err != nil {
+				statusCode = http.StatusInternalServerError
+				w.WriteHeader(statusCode)
+				w.Write([]byte("Error prepairing mounts. Check Slurm Sidecar's logs"))
+				log.G(Ctx).Error(err)
+				os.RemoveAll(commonIL.InterLinkConfigInst.DataRootFolder + string(data.Pod.UID))
+				return
+			}
 
 			log.G(Ctx).Debug("-- Appending all commands together...")
 			singularity_command := append(commstr1, envs...)
@@ -109,7 +112,7 @@ func SubmitHandler(w http.ResponseWriter, r *http.Request) {
 			w.Write([]byte("Error handling JID. Check Slurm Sidecar's logs"))
 			log.G(Ctx).Error(err)
 			os.RemoveAll(commonIL.InterLinkConfigInst.DataRootFolder + string(data.Pod.UID))
-			err = delete_container(string(data.Pod.UID))
+			delete_container(string(data.Pod.UID))
 			return
 		}
 	}

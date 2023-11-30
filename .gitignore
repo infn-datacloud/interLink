@@ -4,7 +4,6 @@ sidecars/slurm/.*
 cmd/sidecars/slurm/.*
 sidecars/docker/.*
 cmd/sidecars/docker/.*
-config
 envs.sh
 token
 secret.yaml

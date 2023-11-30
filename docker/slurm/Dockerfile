@@ -44,8 +44,6 @@ WORKDIR /root
 
 COPY --from=build-stage /app/bin/slurm-sidecar /sidecar/slurm-sidecar
 
-ENV INTERLINKCONFIGPATH=/root/InterLinkConfig.yaml
-
 COPY docker/slurm/InterLinkConfig.yaml .
 
 RUN apt install -y software-properties-common \

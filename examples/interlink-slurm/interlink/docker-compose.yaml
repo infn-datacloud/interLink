@@ -24,6 +24,9 @@ services:
       context: ../../../
       dockerfile: docker/slurm/Dockerfile
     restart: always
+    environment:
+    - INTERLINKCONFIGPATH=/etc/interlink/InterLinkConfig.yaml
+    - SHARED_FS=true
     privileged: true
     cap_add:
     - SYS_ADMIN

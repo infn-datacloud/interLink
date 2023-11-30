@@ -187,7 +187,10 @@ func prepare_mounts(container v1.Container, data []commonIL.RetrievedPodData) ([
 							splitDirs := strings.Split(dirs[0], "/")
 							dir := filepath.Join(splitDirs[:len(splitDirs)-1]...)
 							prefix += "\nmkdir -p " + dir + " && touch " + dirs[0] + " && echo $" + envs[i] + " > " + dirs[0]
-							mount_data += dir
+							prefix += "\ncp " + dirs[0] + "${HOME}/" + commonIL.InterLinkConfigInst.DataRootFolder + string(podData.Pod.UID) + "/container/" + dirs[1]
+							//split by comma and cp in sandbox ONLY secret and kubeconfig!! move above
+							//mount_data += path
+							log.G(Ctx).Info(fmt.Sprintf("-- Preparing mountpoints cfg mounts: %s", mount_data))
 						} else {
 							mount_data += path
 						}
@@ -208,7 +211,8 @@ func prepare_mounts(container v1.Container, data []commonIL.RetrievedPodData) ([
 							splitDirs := strings.Split(dirs[0], "/")
 							dir := filepath.Join(splitDirs[:len(splitDirs)-1]...)
 							prefix += "\nmkdir -p " + dir + " && touch " + dirs[0] + " && echo $" + envs[i] + " > " + dirs[0]
-							mount_data += dir
+							prefix += "\ncp " + dirs[0] + "${HOME}/" + commonIL.InterLinkConfigInst.DataRootFolder + string(podData.Pod.UID) + "/container/" + dirs[1]
+							//mount_data += dir
 						} else {
 							mount_data += path
 						}
@@ -225,6 +229,9 @@ func prepare_mounts(container v1.Container, data []commonIL.RetrievedPodData) ([
 					}
 					for _, path := range paths {
 						mount_data += path
+						dirs := strings.Split(path, ":")
+						prefix += "\nmkdir -p ${HOME}/" + commonIL.InterLinkConfigInst.DataRootFolder + string(podData.Pod.UID) + "/container/" + dirs[1]
+						log.G(Ctx).Info(fmt.Sprintf("-- Preparing mountpoints path empty data: %s", mount_data))
 					}
 				}
 			}
@@ -240,6 +247,7 @@ func prepare_mounts(container v1.Container, data []commonIL.RetrievedPodData) ([
 	if len(mount_data) == 0 {
 		return []string{}, nil
 	}
+
 	return append(mount, mount_data), nil
 }
 
@@ -344,7 +352,7 @@ func produce_slurm_script(podUID string, metadata metav1.ObjectMeta, commands []
 	for _, singularityCommand := range commands {
 		stringToBeWritten += "\n" + strings.Join(singularityCommand.command[:], " ") +
 			" &> " + commonIL.InterLinkConfigInst.DataRootFolder + podUID + "/" + singularityCommand.containerName + ".out; " +
-			"echo $? > " + commonIL.InterLinkConfigInst.DataRootFolder + podUID + "/" + singularityCommand.containerName + ".status &"
+			"echo $PIPESTATUS > " + commonIL.InterLinkConfigInst.DataRootFolder + podUID + "/" + singularityCommand.containerName + ".status &"
 	}
 
 	stringToBeWritten += "\n" + postfix
@@ -464,6 +472,8 @@ func mountData(container v1.Container, pod v1.Pod, data interface{}) ([]string, 
 			for _, vol := range pod.Spec.Volumes {
 				if vol.Name == mountSpec.Name {
 					podVolumeSpec = &vol.VolumeSource
+				} else {
+					continue
 				}
 
 				switch mount := data.(type) {
@@ -539,6 +549,7 @@ func mountData(container v1.Container, pod v1.Pod, data interface{}) ([]string, 
 								}
 							}
 						}
+						log.G(Ctx).Info("--- Mounting ConfigMap " + fmt.Sprintf("%s", configMapNamePaths))
 						return configMapNamePaths, envs, nil
 					}
 
@@ -638,6 +649,7 @@ func mountData(container v1.Container, pod v1.Pod, data interface{}) ([]string, 
 						}
 
 						edPath += (":" + mountSpec.MountPath + "/" + mountSpec.Name + ",")
+						log.G(Ctx).Info("--- Mounting Empty " + edPath)
 						return []string{edPath}, nil, nil
 					}
 				}
