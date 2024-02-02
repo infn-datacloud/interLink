@@ -114,6 +114,7 @@ func (h *SidecarHandler) StatusHandler(w http.ResponseWriter, r *http.Request) {
 						v1.ContainerStatus{
 							Name: ct.Name,
 							State: v1.ContainerState{
+								Running: *v1.ContainerStateWaiting,
 								Terminated: &v1.ContainerStateTerminated{
 									ExitCode: int32(status),
 								},
