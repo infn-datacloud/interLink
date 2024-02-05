@@ -51,12 +51,20 @@ func (h *SidecarHandler) SubmitHandler(w http.ResponseWriter, r *http.Request) {
 			if singularityAnnotation, ok := metadata.Annotations["job.vk.io/singularity-commands"]; ok {
 				singularityPrefix += " " + singularityAnnotation
 			}
-			commstr1 := []string{"singularity", "exec", "--writable-tmpfs", "--nv", "-H", "${HOME}/" +
-				h.Config.DataRootFolder + string(data.Pod.UID) + ":${HOME}"}
+
+			//container.Resources.Requests
+			overlayPath := h.Config.DataRootFolder + data.Pod.Namespace + "-" + string(data.Pod.UID) + "/overlay.img"
+			createOverlay := []string{"singularity", "overlay", "create", "--sparse", "--size=10248", overlayPath, "&&"}
+
+			commstr1 := []string{"singularity", "exec", "--containall", "--overlay", overlayPath, "--nv"}
+			//	h.Config.DataRootFolder + string(data.Pod.UID) }
 
 			envs := prepareEnvs(container, h.Ctx)
 			image := ""
 			mounts, err := prepareMounts(filesPath, container, req, h.Config, h.Ctx)
+			if singularityAnnotation, ok := metadata.Annotations["job.vk.io/singularity-mounts"]; ok {
+				mounts = append(mounts, singularityAnnotation)
+			}
 			log.G(h.Ctx).Debug(mounts)
 			if err != nil {
 				statusCode = http.StatusInternalServerError
@@ -79,7 +87,8 @@ func (h *SidecarHandler) SubmitHandler(w http.ResponseWriter, r *http.Request) {
 			}
 
 			log.G(h.Ctx).Debug("-- Appending all commands together...")
-			singularity_command := append(commstr1, envs...)
+			singularity_command := append(createOverlay, commstr1...)
+			singularity_command = append(singularity_command, envs...)
 			singularity_command = append(singularity_command, mounts...)
 			singularity_command = append(singularity_command, image)
 			singularity_command = append(singularity_command, container.Command...)
@@ -114,7 +123,7 @@ func (h *SidecarHandler) SubmitHandler(w http.ResponseWriter, r *http.Request) {
 			w.Write([]byte("Error handling JID. Check Slurm Sidecar's logs"))
 			log.G(h.Ctx).Error(err)
 			os.RemoveAll(filesPath)
-			err = deleteContainer(string(data.Pod.UID), filesPath, h.Config, h.JIDs, h.Ctx)
+			err = deleteContainer(string(data.Pod.UID), filesPath+"/"+data.Pod.Namespace, h.Config, h.JIDs, h.Ctx)
 			return
 		}
 	}

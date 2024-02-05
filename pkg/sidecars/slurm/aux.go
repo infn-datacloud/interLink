@@ -411,16 +411,17 @@ func deleteContainer(podUID string, path string, config commonIL.InterLinkConfig
 	_, err := exec.Command(config.Scancelpath, (*JIDs)[podUID].JID).Output()
 	if err != nil {
 		log.G(Ctx).Error(err)
+		os.RemoveAll(path)
 		return err
 	} else {
 		log.G(Ctx).Info("- Deleted Job ", (*JIDs)[podUID].JID)
 	}
-	os.RemoveAll(path + "/" + podUID)
-	removeJID(podUID, JIDs)
+	err = os.RemoveAll(path)
 	if err != nil {
-		log.G(Ctx).Warning(err)
+		log.G(Ctx).Error(err)
 		return err
 	}
+	removeJID(podUID, JIDs)
 	return nil
 }
 
