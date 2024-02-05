@@ -33,6 +33,7 @@ func updateCacheRequest(uid string, token string, config commonIL.InterLinkConfi
 	}
 
 	req.Header.Add("Authorization", "Bearer "+token)
+	req.Header.Set("Content-Type", "application/json")
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		log.L.Error(err)
@@ -63,6 +64,7 @@ func createRequest(pod commonIL.PodCreateRequests, token string, config commonIL
 	}
 
 	req.Header.Add("Authorization", "Bearer "+token)
+	req.Header.Set("Content-Type", "application/json")
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		log.L.Error(err)
@@ -98,6 +100,7 @@ func deleteRequest(pod *v1.Pod, token string, config commonIL.InterLinkConfig) (
 	}
 
 	req.Header.Add("Authorization", "Bearer "+token)
+	req.Header.Set("Content-Type", "application/json")
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		log.G(context.Background()).Error(err)
@@ -145,6 +148,7 @@ func statusRequest(podsList []*v1.Pod, token string, config commonIL.InterLinkCo
 
 	req.Header.Add("Authorization", "Bearer "+token)
 
+	req.Header.Set("Content-Type", "application/json")
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return nil, err
@@ -186,6 +190,7 @@ func LogRetrieval(ctx context.Context, logsRequest commonIL.LogStruct, config co
 
 	req.Header.Add("Authorization", "Bearer "+token)
 
+	req.Header.Set("Content-Type", "application/json")
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		log.G(ctx).Error(err)
