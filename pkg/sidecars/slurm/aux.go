@@ -420,7 +420,7 @@ func deleteContainer(podUID string, path string, config commonIL.InterLinkConfig
 	err := os.RemoveAll(path + "/" + podUID)
 	removeJID(podUID, JIDs)
 	if err != nil {
-		log.G(Ctx).Warning(err)
+		log.G(Ctx).Error(err)
 		return err
 	}
 	return err
