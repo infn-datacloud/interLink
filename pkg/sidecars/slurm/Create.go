@@ -106,7 +106,13 @@ func (h *SidecarHandler) SubmitHandler(w http.ResponseWriter, r *http.Request) {
 			os.RemoveAll(filesPath)
 			return
 		}
-		out, err := SLURMBatchSubmit(path, h.Config, h.Ctx)
+
+		buildStageCMD := ""
+		if singularityAnnotation, ok := metadata.Annotations["job.vk.io/singularity-build"]; ok {
+			buildStageCMD = singularityAnnotation
+		}
+
+		out, err := SLURMBatchSubmit(path, h.Config, h.Ctx, buildStageCMD)
 		if err != nil {
 			statusCode = http.StatusInternalServerError
 			w.WriteHeader(statusCode)
