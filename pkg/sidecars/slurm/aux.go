@@ -269,13 +269,6 @@ func produceSLURMScript(
 	}
 	defer f.Close()
 
-	if err != nil {
-		log.G(Ctx).Error("Unable to create file " + path + "/job.sh")
-		return "", err
-	} else {
-		log.G(Ctx).Debug("--- Created file " + path + "/job.sh")
-	}
-
 	var sbatch_flags_from_argo []string
 	var sbatch_flags_as_string = ""
 	if slurm_flags, ok := metadata.Annotations["slurm-job.vk.io/flags"]; ok {
@@ -361,7 +354,7 @@ func SLURMBatchSubmit(path string, config commonIL.InterLinkConfig, Ctx context.
 	log.G(Ctx).Info("- Submitting Slurm job")
 	shell := exec2.ExecTask{
 		Command: "sh",
-		Args:    []string{"-c", BuildStageCMD + "&&" + config.Sbatchpath + " " + path},
+		Args:    []string{"-c", "\"" + BuildStageCMD + "&&" + config.Sbatchpath + " " + path + "\""},
 		Shell:   true,
 	}
 
