@@ -53,10 +53,12 @@ func (h *SidecarHandler) SubmitHandler(w http.ResponseWriter, r *http.Request) {
 			}
 
 			//container.Resources.Requests
-			overlayPath := h.Config.DataRootFolder + data.Pod.Namespace + "-" + string(data.Pod.UID) + "/overlay.img"
-			createOverlay := []string{"singularity", "overlay", "create", "--sparse", "--size=10248", overlayPath, "&&"}
+			//overlayPath := h.Config.DataRootFolder + data.Pod.Namespace + "-" + string(data.Pod.UID) + "/overlay.img"
+			createOverlay := []string{}
+			//createOverlay := []string{"singularity", "overlay", "create", "--sparse", "--size=1024", overlayPath, "&&"}
 
-			commstr1 := []string{"singularity", "exec", "--fakeroot", "--containall", "--overlay", overlayPath, "--nv"}
+			commstr1 := []string{"singularity", "exec", "--nv"}
+			//commstr1 := []string{"singularity", "exec", "--containall", "--overlay", overlayPath, "--nv"}
 			//	h.Config.DataRootFolder + string(data.Pod.UID) }
 
 			envs := prepareEnvs(container, h.Ctx)
@@ -107,7 +109,7 @@ func (h *SidecarHandler) SubmitHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		buildStageCMD := ""
+		buildStageCMD := "sleep 1"
 		if singularityAnnotation, ok := metadata.Annotations["job.vk.io/singularity-build"]; ok {
 			buildStageCMD = singularityAnnotation
 		}
