@@ -125,9 +125,9 @@ func NewInterLinkConfig() (InterLinkConfig, error) {
 }
 
 func PingInterLink(ctx context.Context) (bool, int, error) {
-	log.G(ctx).Info("Pinging: " + InterLinkConfigInst.Interlinkurl + ":" + InterLinkConfigInst.Interlinkport + "/ping")
+	log.G(ctx).Info("Pinging: " + InterLinkConfigInst.Interlinkurl + ":" + InterLinkConfigInst.Interlinkport + "/pinglink")
 	retVal := -1
-	req, err := http.NewRequest(http.MethodPost, InterLinkConfigInst.Interlinkurl+":"+InterLinkConfigInst.Interlinkport+"/ping", nil)
+	req, err := http.NewRequest(http.MethodPost, InterLinkConfigInst.Interlinkurl+":"+InterLinkConfigInst.Interlinkport+"/pinglink", nil)
 
 	if err != nil {
 		log.G(ctx).Error(err)
