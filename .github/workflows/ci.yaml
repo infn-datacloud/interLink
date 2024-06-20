@@ -10,7 +10,7 @@ jobs:
     name: build
     runs-on: ubuntu-latest
     env:
-        GH_REPO_OWNER: ${{ github.repository_name }} 
+        GH_REPO_OWNER: ${{ github.repository_owner }} 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
