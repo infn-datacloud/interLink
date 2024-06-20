@@ -9,6 +9,8 @@ jobs:
   build:
     name: build
     runs-on: ubuntu-latest
+    env:
+        GH_REPO_OWNER: ${{ github.repository_name }} 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -24,6 +26,6 @@ jobs:
         with:
           workdir: ci
           verb: call
-          args: -s build-images --source-folder ../ --virtual-kubelet-ref ghcr.io/${{ github.repository_name }}/interLink/virtual-kubelet-inttw:$GITHUB_SHA --interlink-ref ghcr.io/${{ github.repository_owner }}/interLink/interlink:$GITHUB_SHA new-interlink --manifests $PWD/manifests load-plugin test stdout
+          args: -s build-images --source-folder ../ --virtual-kubelet-ref ghcr.io/${GH_REPO_OWNER}/interLink/virtual-kubelet-inttw:$GITHUB_SHA --interlink-ref ghcr.io/${GH_REPO_OWNER}/interLink/interlink:$GITHUB_SHA new-interlink --manifests $PWD/manifests load-plugin test stdout
           cloud-token: ${{ secrets.DAGGER_CLOUD_TOKEN }}
           #dagger-flags: -d
