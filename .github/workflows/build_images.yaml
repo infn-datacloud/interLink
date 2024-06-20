@@ -35,8 +35,8 @@ jobs:
           context: ./
           outputs: "type=registry,push=true"
           tags: |
-            ghcr.io/${{ steps.get_repo_owner.outputs.repo_owner }}/${GH_REPO_OWNER}/virtual-kubelet-inttw:${{ env.RELEASE_VERSION }}
-            ghcr.io/${{ steps.get_repo_owner.outputs.repo_owner }}/${GH_REPO_OWNER}/virtual-kubelet-inttw:latest
+            ghcr.io/${{ steps.get_repo_owner.outputs.repo_owner }}/interlink/virtual-kubelet-inttw:${{ env.RELEASE_VERSION }}
+            ghcr.io/${{ steps.get_repo_owner.outputs.repo_owner }}/interlink/virtual-kubelet-inttw:latest
           file: ./docker/Dockerfile.vk
           platforms: linux/amd64, linux/arm64
       - name: Build container base image interlink
@@ -45,8 +45,8 @@ jobs:
           context: ./
           outputs: "type=registry,push=true"
           tags: |
-            ghcr.io/${{ steps.get_repo_owner.outputs.repo_owner }}/${GH_REPO_OWNER}/interlink:${{ env.RELEASE_VERSION }}
-            ghcr.io/${{ steps.get_repo_owner.outputs.repo_owner }}/${GH_REPO_OWNER}/interlink:latest
+            ghcr.io/${{ steps.get_repo_owner.outputs.repo_owner }}/interlink/interlink:${{ env.RELEASE_VERSION }}
+            ghcr.io/${{ steps.get_repo_owner.outputs.repo_owner }}/interlink/interlink:latest
           file: ./docker/Dockerfile.interlink
           platforms: linux/amd64, linux/arm64
           
@@ -78,7 +78,7 @@ jobs:
           context: ./
           outputs: "type=registry,push=true"
           tags: |
-            ghcr.io/${{ steps.get_repo_owner.outputs.repo_owner }}/${GH_REPO_OWNER}/virtual-kubelet-inttw-refresh:${{ env.RELEASE_VERSION }}
-            ghcr.io/${{ steps.get_repo_owner.outputs.repo_owner }}/${GH_REPO_OWNER}/virtual-kubelet-inttw-refresh:latest
+            ghcr.io/${{ steps.get_repo_owner.outputs.repo_owner }}/interlink/virtual-kubelet-inttw-refresh:${{ env.RELEASE_VERSION }}
+            ghcr.io/${{ steps.get_repo_owner.outputs.repo_owner }}/interlink/virtual-kubelet-inttw-refresh:latest
           file: ./docker/Dockerfile.refresh-token
           platforms: linux/amd64, linux/arm64
