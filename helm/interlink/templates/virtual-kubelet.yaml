@@ -40,10 +40,8 @@ spec:
           subPath: InterLinkConfig.yaml
         - name: token
           mountPath: /opt/interlink
-      - name: jaeger
-        image: jaegertracing/all-in-one:1.51
       - name: refresh-token
-        image: ghcr.io/intertwin-eu/virtual-kubelet-inttw-refresh:latest
+        image: ghcr.io/intertwin-eu/interlink/virtual-kubelet-inttw-refresh:latest
         imagePullPolicy: Always
         env:
         - name: IAM_TOKEN_ENDPOINT 
@@ -51,6 +49,8 @@ spec:
         # TODO load env IAM client from secret
         - name: IAM_CLIENT_ID
           value: {{.Values.OAUTH.ClientID}}
+        - name: IAM_GRANT_TYPE
+          value: authorization_code
         - name: IAM_CLIENT_SECRET
           value: {{.Values.OAUTH.ClientSecret}} 
         - name: IAM_REFRESH_TOKEN
@@ -77,6 +77,4 @@ spec:
         configMap:
           name: virtual-kubelet-config
       - name: token
-        hostPath:
-          path: /tmp
-          type: Directory
+        emptyDir: {}
