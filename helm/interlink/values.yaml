@@ -5,12 +5,12 @@
 nodeName: default-vk
 
 deployment:
-  image: ghcr.io/intertwin-eu/virtual-kubelet-inttw:latest 
+  image: ghcr.io/intertwin-eu/interlink/virtual-kubelet-inttw:latest
   name: default-vk
 
 interlink:
-  URL: http://localhost
-  port: 5000
+  URL: http://localhost # put here the interlink URL endpoint
+  port: 443
 
 virtualNode:
   CPUs: 100
@@ -18,9 +18,9 @@ virtualNode:
   Pods: 100
 
 OAUTH:
-  TokenURL: DUMMY
-  ClientID: DUMMY
-  ClientSecret: DUMMY
-  RefreshToken: DUMMY
-  Audience: DUMMY
+  TokenURL: # put here the token url issuer
+  ClientID: # put here the client id
+  ClientSecret: # put here the client secret
+  RefreshToken: # put here the refresh token
+  Audience: # put here the audience
 
