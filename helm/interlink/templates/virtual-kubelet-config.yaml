@@ -14,5 +14,5 @@ data:
     Namespace: ""
     VKTokenFile: /opt/interlink/token 
     CPU: "{{ .Values.virtualNode.CPUs }}"
-    Memory: "{{ .Values.virtualNode.MemGiB }}"
+    Memory: "{{ .Values.virtualNode.MemGiB }}Gi"
     Pods: "{{ .Values.virtualNode.Pods }}"
