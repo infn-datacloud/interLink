@@ -1,8 +1,0 @@
-# Authors
-
-## Mantainers
-
-
-
-## Contributors
-

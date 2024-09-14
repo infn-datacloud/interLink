@@ -1,7 +1,0 @@
-FROM python:3.10
-
-RUN pip3 install --no-cache-dir requests==2.31.0
-
-COPY ../docker/scripts/refresh.py /opt/refresh.py
-
-ENTRYPOINT ["python3", "/opt/refresh.py"]
