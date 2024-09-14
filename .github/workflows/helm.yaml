@@ -26,8 +26,11 @@ jobs:
         run: git status
       - name: Print git log
         run: git log -n 10
-            
-      
+        
+      - name: Clean up
+        run: |
+          rm -f changed_charts.txt chart_version.txt
+        
       - name: Install Helm
         uses: azure/setup-helm@v4
 
