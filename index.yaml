@@ -11,4 +11,14 @@ entries:
     urls:
     - https://github.com/infn-datacloud/interLink/releases/download/interlink-0.3.4/interlink-0.3.4.tgz
     version: 0.3.4
-generated: "2024-09-14T08:20:07.067008027Z"
+  - apiVersion: v2
+    appVersion: 0.2.3
+    created: "2024-09-15T06:33:36.382791922Z"
+    description: A Helm chart for interLink virtual kubelet provider
+    digest: bce61584d9d751e9b6054bfb7adc6664925b9c553e613907e3fd41ac41980f2e
+    name: interlink
+    type: application
+    urls:
+    - interlink-0.1.0.tgz
+    version: 0.1.0
+generated: "2024-09-15T06:33:36.633802047Z"
